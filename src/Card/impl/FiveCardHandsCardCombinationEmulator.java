@@ -211,8 +211,4 @@ public class FiveCardHandsCardCombinationEmulator implements CardCombinationEmul
 		return cardList.stream().collect(Collectors.toList());
 
 	}
-	
-	private List<Card> elaborateAnyPairs(Card card1,Card card2, List<Card> cards) {
-		return null;
-	}
 }

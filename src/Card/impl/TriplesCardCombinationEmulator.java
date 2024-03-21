@@ -22,11 +22,6 @@ public class TriplesCardCombinationEmulator implements CardCombinationEmulator{
 			return null;
 		List<Card> cards = combination.getCards().stream().collect(Collectors.toList());
 		
-		/*Set<Card> cardlist = new HashSet<>();
-		cardlist.add(new Card(CardRank.Three, CardSuit.Spades));
-		cardlist.add(new Card(CardRank.Three, CardSuit.Hearts));
-		cardlist.add(new Card(CardRank.Three, CardSuit.Clubs));
-		cardlist.add(new Card(CardRank.Three, CardSuit.Diamonds));*/
 		List<Card> cards2=elaborate(cards.get(0));
 		cards2.addAll(elaborate(cards.get(1)));
 		cards2.addAll(elaborate(cards.get(2)));
@@ -47,13 +42,6 @@ public class TriplesCardCombinationEmulator implements CardCombinationEmulator{
 	    	})
 	       .map(comb-> new TriplesCardCombination.TriplesCardCombinationBuilder().addCard(comb.get(0)).addCard(comb.get(1)).addCard(comb.get(2)).setCardCombinationValue(combination.getValue()).build())
 	       .collect(Collectors.toList());
-
-		/*list1.stream().forEach(s->{
-			System.out.println(s.getCards().size());
-		});*/
-		//System.out.println("hihi"+list1.size());
-		//System.out.println(elaborate(new Card(CardRank.AnyPairs, CardSuit.AnySuit)).size());
-		
 		return list1;
 	}
 

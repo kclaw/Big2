@@ -118,8 +118,21 @@ public class TestFiveCardHandsCardCombination {
 		System.out.println(set.size());
 	}
 	
+	@Test
+	public void testPairsCardCombination() {
+		CardCombinationFactoryImpl factory = new CardCombinationFactoryImpl();
+		List<Card> cards = Arrays.asList(card1, card2, card3,card4,card5, card6,card7,card8,card9,card10,card11,card12,card13);
+		Set<CardCombination> set = factory.createPairs(cards);
+		System.out.println(set.size());
+	}
 	
-	
+	@Test
+	public void testSingleCardCombination() {
+		CardCombinationFactoryImpl factory = new CardCombinationFactoryImpl();
+		List<Card> cards = Arrays.asList(card1, card2, card3,card4,card5, card6,card7,card8,card9,card10,card11,card12,card13);
+		Set<CardCombination> set = factory.createSingle(cards);
+		System.out.println(set.size());
+	}
 	
 
 	public static <T> Set<T> 

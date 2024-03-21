@@ -53,6 +53,12 @@ public final class CardCombinationFactoryImpl extends CardCombinationFactory {
 	
 	@Override
 	public Set<CardCombination> createSingle(List<Card> cards) {
+		SingleCardCombinationEmulator emulator = new SingleCardCombinationEmulator();
+		List<CardCombination> template2 = singles;
+		final List<CardCombination> template3 = new ArrayList<>(template2);
+		List<CardCombination> emulated = new ArrayList<>();
+		for (int i=0;i<template3.size();i++)
+			   emulated.addAll(emulator.emulate(template3.get(i)));
 		return cards.stream()
 			.map(card-> new SingleCardCombination.SingleCardCombinationBuilder().addCard(card).build())
 			.collect(Collectors.toSet());
@@ -60,6 +66,12 @@ public final class CardCombinationFactoryImpl extends CardCombinationFactory {
 
 	@Override
 	public Set<CardCombination> createPairs(List<Card> cards) {
+		PairsCardCombinationEmulator emulator = new PairsCardCombinationEmulator();
+		List<CardCombination> template2 = pairs;
+		final List<CardCombination> template3 = new ArrayList<>(template2);
+		List<CardCombination> emulated = new ArrayList<>();
+		for (int i=0;i<template3.size();i++)
+			   emulated.addAll(emulator.emulate(template3.get(i)));
 			return cards.stream()
 				.flatMap(card1 -> cards.stream().map(card2->{
 					if (card1.getCardRank().equals(card2.getCardRank())) {

@@ -17,7 +17,7 @@ public interface Brain {
      * @param lastRecord
      * @param cards
      */
-    public List<CardCombination> findOutPossiblePlay(PlayType type,Deck deck, List<Card> cards);
+    public Set<CardCombination> findOutPossiblePlay(PlayType type,Deck deck, List<Card> cards);
 	
     
 }

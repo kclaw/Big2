@@ -60,24 +60,14 @@ public class PlayerImpl implements Player {
 		}
 		int[] input = new int[5];
 		for (int i = 0; i < number; i++) {
-			System.out.println("choose your cards (from 0 to 12)");
+			System.out.println("choose your cards (from 0 to "+(this.cards.size()-1)+")");
 			input[i] = sc.nextInt();
 			// System.out.println("you have played card " +
 			// this.cards.get(input[i]).getCardRank() +"///"+
 			// this.cards.get(input[i]).getCardSuit());
-			if (input[i] == 0) {
-				if (record.cards != null && record.cards.size() > 0)
-					record.cards.addAll(this.cards.subList(0, 1));
-				else
-					record.cards = this.cards.subList(0, 1);
-				// System.out.println("1"+ record.cards.get(0).getCardSuit());
-			} else {
-				if (record.cards != null && record.cards.size() > 0)
-					record.cards.addAll(this.cards.subList(input[i], input[i] + 1));
-				else
-					record.cards = this.cards.subList(input[i], input[i] + 1);
-				// System.out.println("2"+ record.cards.get(0).getCardSuit());
-			}
+			if (null==record.cards)
+				record.cards = new ArrayList<Card>();
+			record.cards.addAll(this.cards.subList(i, i+1));
 
 		}
 		record.cards = new ArrayList<>(record.cards);
@@ -120,8 +110,11 @@ public class PlayerImpl implements Player {
 	public Decision makeDecision(PlayType type, Deck deck) {
 		PlayRecord lastRecord = deck.getLastRecord();
 		System.out.println("Is last player discard? " + deck.getLastRecordDiscard());
-		if (null != lastRecord && null != lastRecord.cards)
-			lastRecord.cards.stream().forEach(s -> System.out.println(s.getCardRank() + "///" + s.getCardSuit()));
+		if (null != lastRecord && type==PlayType.INHERIT)
+			if (null != lastRecord && null != lastRecord.cards)
+				lastRecord.cards.stream().forEach(s -> System.out.println(s.getCardRank() + "///" + s.getCardSuit()));
+			else
+				System.out.println("discard from lastrecord");
 		else
 			System.out.println("You are first player/ free noOfCard");
 

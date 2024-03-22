@@ -35,8 +35,6 @@ public final class CardCombinationFactoryImpl extends CardCombinationFactory {
 	private List<CardCombination> triples = null;
 	private List<CardCombination> fiveCardHands = null;
 	
-
-	
 	public CardCombinationFactoryImpl() {
 		try {
 			evaluator = new TriplesCardCombinationEvaluator(new FileInputStream("C:\\Users\\lawre\\OneDrive\\Desktop\\big2-workspace3.2\\BigTwo\\src\\CardValue.xlsx"));

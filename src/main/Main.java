@@ -1,37 +1,19 @@
 package main;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.paukov.combinatorics3.Generator;
-
 import Big2Game.Game;
 import Big2Game.impl.Big2Game;
-import Card.Card;
-import Card.CardAdapter;
-import Card.CardCombination;
-import Card.CardRank;
-import Card.CardSuit;
-import Card.impl.FiveCardHandsCardCombination;
-import Card.impl.FiveCardHandsCardCombinationEmulator;
-import Card.impl.SingleCardCombination;
-import Card.impl.TriplesCardCombination;
-import Card.impl.TriplesCardCombinationEmulator;
-import test.java.TestFiveCardHandsCardCombination;
 
 public class Main {
 	private static final Logger logger = LogManager.getLogger(Main.class);
 	public static void main(String[] argv) {
 		Game game = new Big2Game();
-		//game.startGame();
+		game.startGame();
 		//new TestFiveCardHandsCardCombination().test();
 		//new TestFiveCardHandsCardCombination().test2();
 		//new TestFiveCardHandsCardCombination().test3();
-		new TestFiveCardHandsCardCombination().testSingleCardCombination();
+		//new TestFiveCardHandsCardCombination().testSingleCardCombination();
 		//new TestFiveCardHandsCardCombination().test5();
 		/*Answer answer = Dialogue.ask(Question.of(1, "hi???"), Retry.of(3));
 		System.out.println(answer.accept());

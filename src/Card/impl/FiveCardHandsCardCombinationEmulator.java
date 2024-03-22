@@ -22,11 +22,16 @@ public class FiveCardHandsCardCombinationEmulator implements CardCombinationEmul
 	
 	protected List<Card> cards;
 	protected List<CardCombination> pairs;
+	protected List<CardCombination> triples;
 	protected CardCombinationFactory factory;
+	protected List<CardCombination> testCases;
+	
 	public FiveCardHandsCardCombinationEmulator(List<Card> cards) {
 		this.cards = cards;
 		factory = CardCombinationFactoryImpl.getInstance();
 		pairs = factory.createPairs(this.cards).stream().collect(Collectors.toList());
+		triples = factory.createTriples(this.cards).stream().collect(Collectors.toList());
+		testCases = new ArrayList<>();
 	}
 	
 	@Override
@@ -57,10 +62,7 @@ public class FiveCardHandsCardCombinationEmulator implements CardCombinationEmul
 		.map(s->{
 			if (s.getHandsType()!=CardCombinationFiveCardHandsType.FullHouse)
 				return s;
-				List<CardCombination> triples = factory.createTriples(this.cards).stream().collect(Collectors.toList());
-				List<CardCombination> pairs = factory.createPairs(this.cards).stream().collect(Collectors.toList());
 				List<CardCombination> testCases = new ArrayList<>();
-				
 				for (int i=0;i<triples.size();i++) {
 					List<Card> triplesCards = triples.get(i).getCards().stream().collect(Collectors.toList());
 					for (int j=0;j<pairs.size();j++) {
@@ -74,8 +76,11 @@ public class FiveCardHandsCardCombinationEmulator implements CardCombinationEmul
 							.build());
 					}
 				}
-				if (!new HashSet<>(testCases).add(s))
+				if (!new HashSet<>(testCases).add(s)) {
+					testCases.clear();
 					return s;
+				}
+				testCases.clear();
 			return null;
 		})
 		.filter(Objects::nonNull)
@@ -90,8 +95,6 @@ public class FiveCardHandsCardCombinationEmulator implements CardCombinationEmul
 						List<Card> cards = this.pairs.get(i).getCards().stream().collect(Collectors.toList());
 						cardList.add(cards.get(0));
 						cardList.add(cards.get(1));
-						//System.out.println("added1: "+ cards.get(0).getCardRank()+cards.get(0).getCardSuit());
-						//System.out.println("added2: "+ cards.get(1).getCardRank()+cards.get(1).getCardSuit());
 				}
 				break;
 			case AnyRank:

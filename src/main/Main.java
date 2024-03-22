@@ -31,7 +31,7 @@ public class Main {
 		//new TestFiveCardHandsCardCombination().test();
 		//new TestFiveCardHandsCardCombination().test2();
 		//new TestFiveCardHandsCardCombination().test3();
-		new TestFiveCardHandsCardCombination().testSingleCardCombination();
+		new TestFiveCardHandsCardCombination().test4();
 		//new TestFiveCardHandsCardCombination().test5();
 		/*Answer answer = Dialogue.ask(Question.of(1, "hi???"), Retry.of(3));
 		System.out.println(answer.accept());

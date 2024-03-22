@@ -31,47 +31,15 @@ public class BrainImpl implements Brain{
 
 	@Override
 	public List<CardCombination> findOutPossiblePlay(PlayType type, Deck deck, List<Card> cards) {
-		/*FiveCardHandsCardCombinationEvaluator test = new FiveCardHandsCardCombinationEvaluator();
-		List<CardCombination> value = null;
-		try {
-			value = test.evaluate(new FileInputStream("C:\\Users\\lawre\\Documents\\big2-workspace\\BigTwo\\src\\CardValue.xlsx"));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		return value;*/
 		//int playCardSize = deck.getLastRecordCardsSize();
 		
 		
 		
-		CardCombinationFactory combinations = new CardCombinationFactoryImpl();
+		CardCombinationFactory factory = new CardCombinationFactoryImpl();
 		
 	
-		/*CardCombinationEvaluator<List<CardCombination>> el = new FiveCardHandsCardCombinationEvaluator();
-		List<CardCombination> template = null;
-		try {
-			template = (List<CardCombination>) el.evaluate(new FileInputStream("C:\\Users\\lawre\\OneDrive\\Desktop\\big2-workspace3.2\\BigTwo\\src\\CardValue.xlsx"));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
 		
-		CardCombinationEmulator emulator = new FiveCardHandsCardCombinationEmulator();
-		List<CardCombination> cclist = new ArrayList<>();
-		for(CardCombination cc: template)
-			cclist.addAll(emulator.emulate(cc));
-		
-		List<CardCombination> set1 = combinations.createFiveHands(cards).stream().collect(Collectors.toList());
-		System.out.println(set1.size());//1287
-		set1.addAll(cclist);
-		//System.out.println("tree: "+triples.size());
-		System.out.println(set1.size());//19812
-		System.out.println(findDuplicateInStream(set1.stream()).size());//2023
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return (List<CardCombination>) findDuplicateInStream(set1.stream()).stream().sorted((o1,o2)-> o1.getValue().compareTo(o2.getValue())).collect(Collectors.toList())*/
+		//return (List<CardCombination>) findDuplicateInStream(set1.stream()).stream().sorted((o1,o2)-> o1.getValue().compareTo(o2.getValue())).collect(Collectors.toList())*/
 		return null;
 	}
 	

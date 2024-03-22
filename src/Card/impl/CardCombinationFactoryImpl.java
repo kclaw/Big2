@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.paukov.combinatorics3.Generator;
@@ -53,35 +54,71 @@ public final class CardCombinationFactoryImpl extends CardCombinationFactory {
 	
 	@Override
 	public Set<CardCombination> createSingle(List<Card> cards) {
-		SingleCardCombinationEmulator emulator = new SingleCardCombinationEmulator();
 		List<CardCombination> template2 = singles;
+		SingleCardCombinationEmulator emulator = new SingleCardCombinationEmulator();
 		final List<CardCombination> template3 = new ArrayList<>(template2);
 		List<CardCombination> emulated = new ArrayList<>();
+		
 		for (int i=0;i<template3.size();i++)
 			   emulated.addAll(emulator.emulate(template3.get(i)));
-		return cards.stream()
-			.map(card-> new SingleCardCombination.SingleCardCombinationBuilder().addCard(card).build())
-			.collect(Collectors.toSet());
+		
+		List<CardCombination> emulated2 = emulated.stream()
+				.filter(cc->{
+					if(cc.getCards().retainAll(cards))
+						return false;
+					return true;
+				}).collect(Collectors.toList());
+		Set<CardCombination> list = Generator.combination(cards)
+	       .simple(1)
+	       .stream()
+	       .map(s-> emulator.emulate(new SingleCardCombination.SingleCardCombinationBuilder()
+					.addCard(s.get(0))
+					.build()))
+	      .map(m-> {
+	    	  Set<CardCombination> set = new HashSet<CardCombination>(emulated2);
+	    		 if (set.retainAll(m)) 
+	    			   return set;
+				return null;
+				})
+	       .filter(Objects::nonNull)
+	       .flatMap(Collection::stream)
+	       .collect(Collectors.toSet());
+		return list;
 	}
 
 	@Override
 	public Set<CardCombination> createPairs(List<Card> cards) {
-		PairsCardCombinationEmulator emulator = new PairsCardCombinationEmulator();
 		List<CardCombination> template2 = pairs;
+		PairsCardCombinationEmulator emulator = new PairsCardCombinationEmulator();
 		final List<CardCombination> template3 = new ArrayList<>(template2);
 		List<CardCombination> emulated = new ArrayList<>();
 		for (int i=0;i<template3.size();i++)
 			   emulated.addAll(emulator.emulate(template3.get(i)));
-			return cards.stream()
-				.flatMap(card1 -> cards.stream().map(card2->{
-					if (card1.getCardRank().equals(card2.getCardRank())) {
-						//System.out.println("**"+card1.getCardRank()+"***"+card1.getCardSuit()+"**"+card2.getCardRank()+"***"+card2.getCardSuit());
-						return new PairsCardCombination.PairsCardCombinationBuilder().addCard(card1).addCard(card2).build();
-					}
-					return null;
-				}))
-				.filter(Objects::nonNull)
-				.collect(Collectors.toSet());
+		
+		List<CardCombination> emulated2 = emulated.stream()
+				.filter(cc->{
+					if(cc.getCards().retainAll(cards))
+						return false;
+					return true;
+				}).collect(Collectors.toList());
+		
+		Set<CardCombination> list = Generator.combination(cards)
+	       .simple(2)
+	       .stream()
+	       .map(s-> emulator.emulate(new PairsCardCombination.PairsCardCombinationBuilder()
+					.addCard(s.get(0))
+					.addCard(s.get(1))
+					.build()))
+	      .map(m-> {
+	    	  Set<CardCombination> set = new HashSet<CardCombination>(emulated2);
+	    		 if (set.retainAll(m)) 
+	    			   return set;
+				return null;
+				})
+	       .filter(Objects::nonNull)
+	       .flatMap(Collection::stream)
+	       .collect(Collectors.toSet());
+		return list;
 	}
 
 	@Override

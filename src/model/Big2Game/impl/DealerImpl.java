@@ -5,6 +5,8 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import controller.DeckController;
+import controller.PlayerController;
 import model.Big2Game.Dealer;
 import model.Big2Game.Decision;
 import model.Big2Game.DecisionType;
@@ -15,21 +17,21 @@ import model.Big2Game.Player;
 import model.Big2Game.ShouldAnyNumberOfPlayCardAfterThreeDiscard;
 import model.Card.Card;
 
-public final class DealerImpl implements Dealer{
-	private Player playerInTurn = null;
-	private int firstPlayerIndex = 0;
-	private List<Player> players;
+public final class DealerImpl implements Dealer {
+	private PlayerController playerControllerInTurn;
+	private PlayerController firstPlayerController;
+	private List<PlayerController> playerControllers;
 	private int turns = 1;
-	private Deck deck = null;
+	private DeckController deckController;
 	private static final Logger logger = LogManager.getLogger(DealerImpl.class);
 	
 	@Override
 	public boolean distributeCards(List<Card> cards) {
 		if(this.shuffleCards(cards)) {
-			players.get(0).receiveCards(cards.subList(0, 13));
-			players.get(1).receiveCards(cards.subList(13, 26));
-			players.get(2).receiveCards(cards.subList(26, 39));
-			players.get(3).receiveCards(cards.subList(39, 52));
+			playerControllers.get(0).playerReceivesCards(cards.subList(0, 13));
+			playerControllers.get(1).playerReceivesCards(cards.subList(13, 26));
+			playerControllers.get(2).playerReceivesCards(cards.subList(26, 39));
+			playerControllers.get(3).playerReceivesCards(cards.subList(39, 52));
 			return true;
 		}
 		return false;
@@ -41,11 +43,11 @@ public final class DealerImpl implements Dealer{
 	}
 
 	@Override
-	public boolean determineFirstPlayer(List<Player> players) {
-		for (int i=0;i<players.size();i++) {
-			if (players.get(i).haveThreeOfDiamonds()) {
-				playerInTurn = players.get(i);
-				firstPlayerIndex = i;
+	public boolean determineFirstPlayer(List<PlayerController> playerControllers) {
+		for (int i=0;i<playerControllers.size();i++) {
+			if (playerControllers.get(i).playerHasThreeOfDiamonds()) {
+				playerControllerInTurn = playerControllers.get(i);
+				firstPlayerController = playerControllers.get(i);
 				logger.info("first player is "+i);
 				return true;
 			};
@@ -54,9 +56,9 @@ public final class DealerImpl implements Dealer{
 	}
 
 	@Override
-	public boolean determineEndGame(Player player) {
-		if (player.haveNoCards()) {
-			logger.info(player.getName()+" no cards");
+	public boolean determineEndGame(PlayerController playerController) {
+		if (playerController.playerHasNoCards()) {
+			logger.info(playerController.getPlayerName()+" no cards");
 			return true;
 		}
 		return false;
@@ -66,58 +68,61 @@ public final class DealerImpl implements Dealer{
 	public PlayRecord askForPlay() {
 		ShouldAnyNumberOfPlayCardAfterThreeDiscard rule = new ShouldAnyNumberOfPlayCardAfterThreeDiscard();
 		boolean meetRule = false;
-		if (this.deck.getPlayRecords().size()>=3)
-			meetRule = rule.isValidPlay(this.deck.getLastThreeRecords());
+		if (this.deckController.getDeckPlayRecords().size()>=3)
+			meetRule = rule.isValidPlay(this.deckController.getDeckLastThreeRecords());
 		PlayType type = PlayType.INHERIT;
-		if (this.players.get(this.firstPlayerIndex)==playerInTurn||meetRule==true)
+		if (null!=firstPlayerController && firstPlayerController.equals(playerControllerInTurn)||meetRule==true) {
 			type = PlayType.FREE;
-		
-		Decision decision = this.playerInTurn.makeDecision(type, this.deck);
+			firstPlayerController = null;
+		}
+		playerControllerInTurn.updateView();
+		Decision decision = playerControllerInTurn.playerMakesDecision(playerControllerInTurn, this.deckController);
 		if (null!=decision && decision.type==DecisionType.PLAY) {
-			PlayRecord record = this.playerInTurn.playCards(type, this.deck);
+			PlayRecord record = playerControllerInTurn.playerPlaysCards(type, this.deckController);
 			record.turns = turns++;
 			return record;
 		} else if(null!=decision) {
-			PlayRecord record = this.playerInTurn.discard();
+			PlayRecord record = this.playerControllerInTurn.playerDiscard();
 			record.turns = turns++;
 			return record;
 		}
 		return null;
 	}
 
-	@Override
-	public void setPlayers(List<Player> players) {
-		this.players = players;
-	}
 
-	@Override
-	public List<Player> getPlayers() {
-		return this.players;
-	}
-
-	@Override
-	public Player getPlayerInTurn() {
-		return this.playerInTurn;
-	}
 
 	@Override
 	public boolean chooseNextPlayer() {
-		int nextPlayerIndex = (this.firstPlayerIndex+this.turns-1) % 4;
-		playerInTurn = players.get(nextPlayerIndex);
-		logger.info("next player is " + nextPlayerIndex);
+		playerControllerInTurn = this.playerControllerInTurn.getNextPlayerController();
+		logger.info("next player is " + playerControllerInTurn.getPlayerName());
 		return true;
 	}
 
 	@Override
-	public boolean recognisePlayers(List<Player> players) {
-		this.players = players;
+	public boolean recognisePlayerController(List<PlayerController> playerControllers) {
+		this.playerControllers = playerControllers;
 		return true;
 	}
 
 	@Override
-	public boolean recogniseDeck(Deck deck) {
-		this.deck = deck;
+	public boolean recogniseDeckController(DeckController deckController) {
+		this.deckController = deckController;
 		return true;
+	}
+
+	@Override
+	public List<PlayerController> getPlayerController() {
+		return this.playerControllers;
+	}
+
+	@Override
+	public void setPlayers(List<PlayerController> playerControllers) {
+		this.playerControllers = playerControllers;
+	}
+
+	@Override
+	public PlayerController getPlayerControllerInTurn() {
+		return this.playerControllerInTurn;
 	}
 
 }

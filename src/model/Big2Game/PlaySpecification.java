@@ -5,7 +5,7 @@ import java.util.*;
 /**
  * 
  */
-interface PlaySpecification {
+public interface PlaySpecification {
 
     /**
      * @param records 

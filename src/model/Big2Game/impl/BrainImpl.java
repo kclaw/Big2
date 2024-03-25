@@ -3,8 +3,9 @@ package model.Big2Game.impl;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import controller.DeckController;
 import model.Big2Game.Brain;
-import model.Big2Game.Deck;
 import model.Big2Game.PlayType;
 import model.Card.Card;
 import model.Card.CardCombination;
@@ -12,13 +13,11 @@ import model.Card.CardCombinationFactory;
 import model.Card.impl.CardCombinationFactoryImpl;
 
 public class BrainImpl implements Brain{
-
-
 	@Override
-	public Set<CardCombination> findOutPossiblePlay(PlayType type, Deck deck, List<Card> cards) {
+	public Set<CardCombination> findOutPossiblePlay(PlayType type, DeckController deckController, List<Card> cards) {
 		CardCombinationFactory factory = new CardCombinationFactoryImpl();
 		if (type==PlayType.INHERIT) {
-			switch(deck.getLastRecordCardsSize()) {
+			switch(deckController.getDeckLastRecordCardsSize()) {
 				case 1:
 					return factory.createSingle(cards);
 				case 2:

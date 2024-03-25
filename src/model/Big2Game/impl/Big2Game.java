@@ -3,24 +3,25 @@ package model.Big2Game.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-
+import controller.DeckController;
+import controller.PlayerController;
 import model.Big2Game.AbstractGameLifeCycle;
 import model.Big2Game.Dealer;
-import model.Big2Game.Deck;
 import model.Big2Game.Game;
 import model.Big2Game.PlayRecord;
-import model.Big2Game.Player;
 import model.Card.Card;
 
 import model.Card.CardRank;
 import model.Card.CardSuit;
+import view.DeckView;
+import view.PlayerView;
 
 
 public final class Big2Game extends AbstractGameLifeCycle implements Game {
 
 	private Dealer dealer;
-	private Deck deck;
-	private List<Player> players;
+	private DeckController deckController;
+	private List<PlayerController> playerControllers;
 	private List<Card> cards;
 
 	@Override
@@ -42,7 +43,7 @@ public final class Big2Game extends AbstractGameLifeCycle implements Game {
 		boolean gameRunning;
 		do {
 			this.onPlayerTurn();
-			gameRunning = !dealer.determineEndGame(dealer.getPlayerInTurn());
+			gameRunning = !dealer.determineEndGame(dealer.getPlayerControllerInTurn());
 			if (gameRunning)
 				this.onPlayerTurnEnded();
 		}
@@ -53,14 +54,22 @@ public final class Big2Game extends AbstractGameLifeCycle implements Game {
 	@Override
 	public void onGameStart() {
 		this.dealer = new DealerImpl();
-		this.deck = new DeckImpl();
-		this.players = new ArrayList<>();
-		this.players.add(new PlayerImpl("1"));
-		this.players.add(new PlayerImpl("2"));
-		this.players.add(new PlayerImpl("3"));
-		this.players.add(new PlayerImpl("4"));
-		this.dealer.recognisePlayers(players);
-		this.dealer.recogniseDeck(deck);
+		this.deckController = new DeckController(new DeckImpl(), new DeckView());
+		this.playerControllers = new ArrayList<>();
+		PlayerController playerController1 = new PlayerController(new PlayerImpl("1"), new PlayerView());
+		PlayerController playerController2 = new PlayerController(new PlayerImpl("2"), new PlayerView());
+		PlayerController playerController3 = new PlayerController(new PlayerImpl("3"), new PlayerView());
+		PlayerController playerController4 = new PlayerController(new PlayerImpl("4"), new PlayerView());
+		playerController1.setNextPlayerController(playerController2);
+		playerController2.setNextPlayerController(playerController3);
+		playerController3.setNextPlayerController(playerController4);
+		playerController4.setNextPlayerController(playerController1);
+		this.playerControllers.add(playerController1);
+		this.playerControllers.add(playerController2);
+		this.playerControllers.add(playerController3);
+		this.playerControllers.add(playerController4);
+		this.dealer.recognisePlayerController(this.playerControllers);
+		this.dealer.recogniseDeckController(this.deckController);
 		this.cards = new ArrayList<>();
 		this.cards.add(new Card(CardRank.A, CardSuit.Spades));
 		this.cards.add(new Card(CardRank.A, CardSuit.Hearts));
@@ -120,34 +129,17 @@ public final class Big2Game extends AbstractGameLifeCycle implements Game {
 	@Override
 	public void onDistributeCards() {
 		this.dealer.distributeCards(cards);
-		/*CardCombinationFactory factory = new CardCombinationFactoryImpl();
-		Set<CardCombination> combinations = factory.createFiveHands(this.players.get(0).getPlayerCards());
-		System.out.println("www"+combinations);
-		List<CardCombination> cc = new ArrayList<>(combinations);
-		int counter = 0;
-		for (CardCombination c:cc) {
-			//System.out.println(c);
-			for(Card card:c.getCards()) {
-				System.out.println(++counter);
-				System.out.println(card.getCardRank()+"///"+card.getCardSuit());
-			}
-			System.out.println("/////end///////");
-		}*/
-		/*System.out.println(CardRank.K.isGreaterThan(CardRank.A));
-		System.out.println(CardRank.Four.isLessThan(CardRank.Three));
-		System.out.println(CardSuit.Spades.isGreaterThan(CardSuit.Hearts));*/
 	}
 
 	@Override
 	public void onDetermineFirstPlayer() {
-		this.dealer.determineFirstPlayer(players);
+		this.dealer.determineFirstPlayer(playerControllers);
 	}
 
 	@Override
 	public void onPlayerTurn() {
-		//this.dealer.getPlayerInTurn().makeDecision(this.deck);
 		PlayRecord record = this.dealer.askForPlay();
-		this.deck.addPlayRecord(record);
+		this.deckController.addDeckPlayRecord(record);
 	}
 
 	@Override

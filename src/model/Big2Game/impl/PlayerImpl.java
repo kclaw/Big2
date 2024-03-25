@@ -8,17 +8,18 @@ import java.util.Scanner;
 import model.Big2Game.Brain;
 import model.Big2Game.Decision;
 import model.Big2Game.DecisionType;
-import model.Big2Game.Deck;
 import model.Big2Game.PlayRecord;
 import model.Big2Game.PlayType;
 import model.Big2Game.Player;
-import model.Big2Game.ShouldAnyNumberOfPlayCardAfterThreeDiscard;
 import model.Card.Card;
 import model.Card.CardRank;
 import model.Card.CardSuit;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import controller.DeckController;
+import controller.PlayerController;
 
 public class PlayerImpl implements Player {
 
@@ -41,11 +42,11 @@ public class PlayerImpl implements Player {
 	}
 
 	@Override
-	public PlayRecord playCards(PlayType type, Deck deck) {
+	public PlayRecord playCards(PlayType type, DeckController deckController) {
 		PlayRecord record = new PlayRecord();
 		record.discard = false;
 
-		this.brain.findOutPossiblePlay(type, deck, this.cards).stream().forEach(s -> {
+		this.brain.findOutPossiblePlay(type, deckController, this.cards).stream().forEach(s -> {
 			
 			  System.out.println("hi there!"); for (Card c:s.getCards())
 			 System.out.println(c.getCardRank()+"///"+c.getCardSuit()+" value:~"+s.getValue
@@ -53,7 +54,7 @@ public class PlayerImpl implements Player {
 			 /// System.out.println("\uD83C\uDCA1");
 		});
 		Scanner sc = new Scanner(System.in);
-		int number = deck.getLastRecord() != null ? deck.getLastRecordCardsSize() : -1;
+		int number = deckController.getDeckLastRecord() != null ? deckController.getDeckLastRecordCardsSize() : -1;
 		if (type == PlayType.FREE) {
 			System.out.println("choose number of cards you play (from 1 to 5)");
 			number = sc.nextInt();
@@ -107,33 +108,27 @@ public class PlayerImpl implements Player {
 	}
 
 	@Override
-	public Decision makeDecision(PlayType type, Deck deck) {
-		PlayRecord lastRecord = deck.getLastRecord();
-		System.out.println("Is last player discard? " + deck.getLastRecordDiscard());
-		if (null != lastRecord && type==PlayType.INHERIT)
-			if (null != lastRecord && null != lastRecord.cards)
-				lastRecord.cards.stream().forEach(s -> System.out.println(s.getCardRank() + "///" + s.getCardSuit()));
-			else
-				System.out.println("discard from lastrecord");
-		else
-			System.out.println("You are first player/ free noOfCard");
-
+	public Decision makeDecision(PlayerController playerController, DeckController deckController) {
+		deckController.updateView();
 		while (true) {
-			System.out.println("player " + name + " can choose play(p)/discard(d)");
+			playerController.updateView();
 			this.cards.stream().forEach(c -> System.out.print(c.getCardRank() + " of " + c.getCardSuit() + " ///"));
 			System.out.println();
 			Scanner sc = new Scanner(System.in);
 			String input = sc.next();
 
 			if (!input.isEmpty()) {
-				System.out.println("You have chosen: " + input);
 				if (input.equals("p")) {
+					playerController.updateView(true);
 					Decision decision = new Decision();
 					decision.type = DecisionType.PLAY;
+					//sc.close();
 					return decision;
 				} else if (input.equals("d")) {
+					playerController.updateView(false);
 					Decision decision = new Decision();
 					decision.type = DecisionType.DISCARD;
+					//sc.close();
 					return decision;
 				} else {
 					break;

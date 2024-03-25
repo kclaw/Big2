@@ -11,14 +11,14 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.paukov.combinatorics3.Generator;
 
-import Card.Card;
-import Card.CardCombination;
-import Card.CardCombinationValue;
-import Card.CardRank;
-import Card.CardSuit;
-import Card.impl.CardCombinationFactoryImpl;
-import Card.impl.FiveCardHandsCardCombination;
-import Card.impl.FiveCardHandsCardCombinationEmulator;
+import model.Card.CardCombination;
+import model.Card.CardCombinationValue;
+import model.Card.CardRank;
+import model.Card.CardSuit;
+import model.Card.impl.CardCombinationFactoryImpl;
+import model.Card.impl.FiveCardHandsCardCombination;
+import model.Card.impl.FiveCardHandsCardCombinationEmulator;
+import model.Card.Card;
 
 public class TestFiveCardHandsCardCombination {
 	

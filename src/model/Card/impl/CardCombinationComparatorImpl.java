@@ -93,12 +93,8 @@ public class CardCombinationComparatorImpl implements CardCombinationComparator 
 		} catch (FileNotFoundException e) {
 			throw new RuntimeException(e);
 		}
-		
-		
-		
-		if(cc1.getValue().getValue()>cc2.getValue().getValue())
-			return true;
 		return false;
+		
 	}
 
 }

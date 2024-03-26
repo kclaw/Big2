@@ -2,6 +2,7 @@ package model.Big2Game.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import controller.DeckController;
 import controller.PlayerController;
@@ -150,6 +151,8 @@ public final class Big2Game extends AbstractGameLifeCycle implements Game {
 	@Override
 	public void onGameEnded() {
 		System.out.println("GAME ENDED");
+		Scanner sc = new Scanner(System.in);
+		sc.close();
 	}
 
 	

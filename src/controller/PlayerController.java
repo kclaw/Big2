@@ -25,8 +25,8 @@ public class PlayerController  {
 	}
 
 	
-	public PlayRecord playerPlaysCards(PlayType type, DeckController deckController) {
-		return this.player.playCards(type, deckController);
+	public PlayRecord playerPlaysCards(PlayType type,PlayerController playerController, DeckController deckController) {
+		return this.player.playCards(type, this, deckController);
 	}
 
 
@@ -78,5 +78,13 @@ public class PlayerController  {
 	
 	public void updateView(boolean isPlayCard) {
 		view.paintChoice(isPlayCard);
+	}
+	
+	public void updateViewChoosingNumberOfCard() {
+		view.paintChoosingNumberOfCards();
+	}
+	
+	public void updateViewPickingCards(int size) {
+		view.paintPickingCards(size);
 	}
 }

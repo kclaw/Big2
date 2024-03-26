@@ -10,7 +10,7 @@ public interface Player {
 
     public void receiveCards(List<Card> cards);
 
-    public PlayRecord playCards(PlayType type, DeckController deckController);
+    public PlayRecord playCards(PlayType type,PlayerController playerController,DeckController deckController);
 
     public PlayRecord discard();
     

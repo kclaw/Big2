@@ -78,7 +78,7 @@ public final class DealerImpl implements Dealer {
 		playerControllerInTurn.updateView();
 		Decision decision = playerControllerInTurn.playerMakesDecision(playerControllerInTurn, this.deckController);
 		if (null!=decision && decision.type==DecisionType.PLAY) {
-			PlayRecord record = playerControllerInTurn.playerPlaysCards(type, this.deckController);
+			PlayRecord record = playerControllerInTurn.playerPlaysCards(type, playerControllerInTurn, this.deckController);
 			record.turns = turns++;
 			return record;
 		} else if(null!=decision) {

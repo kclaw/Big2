@@ -24,14 +24,12 @@ public class FiveCardHandsCardCombinationEmulator implements CardCombinationEmul
 	protected List<CardCombination> pairs;
 	protected List<CardCombination> triples;
 	protected CardCombinationFactory factory;
-	protected List<CardCombination> testCases;
 	
 	public FiveCardHandsCardCombinationEmulator(List<Card> cards) {
 		this.cards = cards;
 		factory = CardCombinationFactoryImpl.getInstance();
 		pairs = factory.createPairs(this.cards).stream().collect(Collectors.toList());
 		triples = factory.createTriples(this.cards).stream().collect(Collectors.toList());
-		testCases = new ArrayList<>();
 	}
 	
 	@Override

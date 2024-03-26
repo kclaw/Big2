@@ -1,9 +1,9 @@
 package model.Big2Game.impl;
 
 import java.util.ArrayList;
-
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 
 import model.Big2Game.Brain;
 import model.Big2Game.Decision;
@@ -12,8 +12,10 @@ import model.Big2Game.PlayRecord;
 import model.Big2Game.PlayType;
 import model.Big2Game.Player;
 import model.Card.Card;
+import model.Card.CardCombination;
 import model.Card.CardRank;
 import model.Card.CardSuit;
+import model.Card.impl.SingleCardCombination.SingleCardCombinationBuilder;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,9 +25,9 @@ import controller.PlayerController;
 
 public class PlayerImpl implements Player {
 
-	String name;
-	List<Card> cards;
-	Brain brain;
+	protected String name;
+	protected List<Card> cards;
+	protected Brain brain;
 
 	private static final Logger logger = LogManager.getLogger(PlayerImpl.class);
 
@@ -42,35 +44,50 @@ public class PlayerImpl implements Player {
 	}
 
 	@Override
-	public PlayRecord playCards(PlayType type, DeckController deckController) {
+	public PlayRecord playCards(PlayType type,PlayerController playerController, DeckController deckController) {
 		PlayRecord record = new PlayRecord();
 		record.discard = false;
 
-		this.brain.findOutPossiblePlay(type, deckController, this.cards).stream().forEach(s -> {
-			
-			  System.out.println("hi there!"); for (Card c:s.getCards())
-			 System.out.println(c.getCardRank()+"///"+c.getCardSuit()+" value:~"+s.getValue
-			  ().getValue());
-			 /// System.out.println("\uD83C\uDCA1");
-		});
+		Set<CardCombination> combo = this.brain.findOutPossiblePlay(type, deckController, this.cards);
+
 		Scanner sc = new Scanner(System.in);
 		int number = deckController.getDeckLastRecord() != null ? deckController.getDeckLastRecordCardsSize() : -1;
 		if (type == PlayType.FREE) {
-			System.out.println("choose number of cards you play (from 1 to 5)");
+			playerController.updateViewChoosingNumberOfCard();
 			number = sc.nextInt();
 		}
 		int[] input = new int[5];
-		for (int i = 0; i < number; i++) {
-			System.out.println("choose your cards (from 0 to "+(this.cards.size()-1)+")");
-			input[i] = sc.nextInt();
-			// System.out.println("you have played card " +
-			// this.cards.get(input[i]).getCardRank() +"///"+
-			// this.cards.get(input[i]).getCardSuit());
-			if (null==record.cards)
-				record.cards = new ArrayList<Card>();
-			record.cards.addAll(this.cards.subList(i, i+1));
-
-		}
+		boolean isValidPlay = false;
+		do {
+			for (int i = 0; i < number; i++) {
+				playerController.updateViewPickingCards(this.cards.size()-1);
+				input[i] = sc.nextInt();
+				if (null==record.cards)
+					record.cards = new ArrayList<Card>();	
+				record.cards.addAll(this.cards.subList(i, i+1));
+			}
+			switch (number) {
+				case 1:
+					CardCombination cc = new SingleCardCombinationBuilder()
+							.addCard(record.cards.get(0))
+							.build();
+					CardCombination cc2 = null;
+					if(null!=deckController.getDeckLastRecord()) {
+						cc2 = new SingleCardCombinationBuilder()
+								.addCard(deckController.getDeckLastRecord().cards.get(0))
+								.build();
+						if(!combo.add(cc) && cc.getValue().getValue()>cc2.getValue().getValue())
+							isValidPlay = true;
+					} else {
+						if (cc2==null) {
+							if(!combo.add(cc) && cc.getValue().getValue()>=0)
+								isValidPlay = true;
+						}
+					}
+					break;
+			}
+		} while (!isValidPlay);
+		
 		record.cards = new ArrayList<>(record.cards);
 		this.cards.removeAll(record.cards);
 		this.cards.stream().forEach(s -> System.out.println(s.getCardRank() + "***" + s.getCardSuit()));
@@ -122,13 +139,11 @@ public class PlayerImpl implements Player {
 					playerController.updateView(true);
 					Decision decision = new Decision();
 					decision.type = DecisionType.PLAY;
-					//sc.close();
 					return decision;
 				} else if (input.equals("d")) {
 					playerController.updateView(false);
 					Decision decision = new Decision();
 					decision.type = DecisionType.DISCARD;
-					//sc.close();
 					return decision;
 				} else {
 					break;

@@ -1,5 +1,6 @@
 package model.Card.impl;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -33,6 +34,19 @@ public class FiveCardHandsCardCombinationEvaluator implements CardCombinationEva
 			e.printStackTrace();
 		}  
 	}
+	
+	public FiveCardHandsCardCombinationEvaluator(String url) {
+		try {
+			InputStream stream = new FileInputStream(url);
+			wb = WorkbookFactory.create(stream);
+		} catch (EncryptedDocumentException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}  
+	}
+	
+	
 	@Override
 	public List<CardCombination> evaluate() {
 		List<CardCombination> hands = new ArrayList<>();

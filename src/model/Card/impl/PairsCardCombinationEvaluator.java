@@ -1,5 +1,6 @@
 package model.Card.impl;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -33,6 +34,17 @@ public class PairsCardCombinationEvaluator implements CardCombinationEvaluator<L
 			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}  
+	}
+	
+	public PairsCardCombinationEvaluator(String url) {
+		try {
+			InputStream stream = new FileInputStream(url);
+			wb = WorkbookFactory.create(stream);
+		} catch (EncryptedDocumentException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}  
 	}

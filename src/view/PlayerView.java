@@ -1,5 +1,12 @@
 package view;
 
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import model.Card.Card;
+import model.Card.CardCombination;
+
 public class PlayerView {
 
 	public void paintIntroduction(String name) {
@@ -23,5 +30,15 @@ public class PlayerView {
 	
 	public void paintPickingCards(int size) {
 		System.out.println("choose your cards (from 0 to "+ size +")");
+	}
+	
+	public void paintCardCombination(Set<CardCombination> comb) {
+		comb.stream().forEach(cc->{
+			System.out.println("==========");
+			List<Card> cards = cc.getCards().stream().collect(Collectors.toList());
+			for (int i=0;i<cards.size();i++)
+				System.out.println(cards.get(i).getCardRank()+""+cards.get(i).getCardSuit());
+			System.out.println("==========");
+		});
 	}
 }

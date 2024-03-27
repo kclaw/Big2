@@ -1,12 +1,14 @@
 package controller;
 
 import java.util.List;
+import java.util.Set;
 
 import model.Big2Game.Decision;
 import model.Big2Game.PlayRecord;
 import model.Big2Game.PlayType;
 import model.Big2Game.Player;
 import model.Card.Card;
+import model.Card.CardCombination;
 import view.PlayerView;
 
 public class PlayerController  {
@@ -86,5 +88,9 @@ public class PlayerController  {
 	
 	public void updateViewPickingCards(int size) {
 		view.paintPickingCards(size);
+	}
+	
+	public void updateViewCardCombination(Set<CardCombination> comb) {
+		view.paintCardCombination(comb);
 	}
 }

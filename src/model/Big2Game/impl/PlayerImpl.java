@@ -15,12 +15,7 @@ import model.Card.Card;
 import model.Card.CardCombination;
 import model.Card.CardRank;
 import model.Card.CardSuit;
-import model.Card.CardCombinationComparator;
-import model.Card.impl.CardCombinationComparatorImpl;
-import model.Card.impl.CardCombinationValueExtractorImpl;
-import model.Card.impl.CardListToCardCombinationConverter;
-import model.Card.impl.SingleCardCombination;
-import model.Card.CardCombinationValueExtractor;
+import model.Card.impl.CardCombinationValidateEnum;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -49,12 +44,11 @@ public class PlayerImpl implements Player {
 	}
 
 	@Override
-	public PlayRecord playCards(PlayType type,PlayerController playerController, DeckController deckController) {
+	public PlayRecord playCards(PlayType type, PlayerController playerController, DeckController deckController) {
 		PlayRecord record = new PlayRecord();
 		record.discard = false;
-
-		Set<CardCombination> combo = this.brain.findOutPossiblePlay(type, deckController, this.cards);
-
+		Set<CardCombination> comb = this.brain.findOutPossiblePlay(type, deckController, this.cards);
+		playerController.updateViewCardCombination(comb);
 		Scanner sc = new Scanner(System.in);
 		int number = deckController.getDeckLastRecord() != null ? deckController.getDeckLastRecordCardsSize() : -1;
 		if (type == PlayType.FREE) {
@@ -62,46 +56,31 @@ public class PlayerImpl implements Player {
 			number = sc.nextInt();
 		}
 			boolean isValidPlay = false;
-			do {
-				int[] input = new int[5];
-				
-				for (int i = 0; i < number; i++) {
-					playerController.updateViewPickingCards(this.cards.size()-1);
-					input[i] = sc.nextInt();
-					if (null==record.cards)
-						record.cards = new ArrayList<Card>();	
-					record.cards.addAll(this.cards.subList(i, i+1));
-				}
-				int length = record.cards.size();
-				CardCombinationValueExtractor extractor = 	new CardCombinationValueExtractorImpl();
-				CardCombinationComparator comparator = new CardCombinationComparatorImpl();
-				switch(length) {
-					case 1:
-						CardCombination c = new SingleCardCombination.SingleCardCombinationBuilder()
-						.addCard(record.cards.get(0))
-						.build();
-						if (type==PlayType.INHERIT) {
-							CardCombination c2 = new CardListToCardCombinationConverter().convert(deckController.getDeckLastRecord().cards);
-							if (extractor.extractValue(c)>0 && comparator.isGreaterThan(c, c2))
-								isValidPlay = true;
-						} else if (type==PlayType.FREE) {
-							if (extractor.extractValue(c)>0)
-								isValidPlay = true;
+			mark:do {
+					String[] input = new String[5];
+					for (int i = 0; i < number; i++) {
+						playerController.updateViewPickingCards(this.cards.size()-1);
+						input[i] = sc.next();
+						if (null==record.cards)
+							record.cards = new ArrayList<Card>();
+						if (input[i].charAt(0)=='d') {
+							record.discard = true;
+							break mark;
 						}
-							
-					case 2:
-					case 3:
-					case 5:
-				}
-				
-				
-				
-				
-			} while(!isValidPlay);
+						int range = Integer.parseInt(input[i]);
+						record.cards.addAll(this.cards.subList(range, range+1));
+					}
+					int length = number;
+					isValidPlay = CardCombinationValidateEnum.getValidationByLength(length).execute(type, record, deckController);
+				} while(!isValidPlay);
 		
-		record.cards = new ArrayList<>(record.cards);
-		this.cards.removeAll(record.cards);
-		//this.cards.stream().forEach(s -> System.out.println(s.getCardRank() + "***" + s.getCardSuit()));
+			
+		if (!record.discard) {
+			record.cards = new ArrayList<>(record.cards);
+			this.cards.removeAll(record.cards);
+		} else {
+			record.cards = null;
+		}
 
 		logger.info("player " + name + " playcards");
 		return record;
